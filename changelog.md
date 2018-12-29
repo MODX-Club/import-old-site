@@ -1,3 +1,7 @@
+1.3.2
+===============================
+- Update @prisma-cms/module-boilerplate
+
 1.3.1
 ===============================
 - Fix create project name

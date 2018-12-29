@@ -2,15 +2,12 @@
 import chalk from "chalk";
 import PrismaProcessor from "@prisma-cms/prisma-processor";
 
-import Knex from "knex";
-
 import MySQL from "./mysql";
 
 import {
   ResourceProcessor,
 } from "@prisma-cms/resource-module";
 
-import React from "react";
 import Draft from "draft-js";
 
 
