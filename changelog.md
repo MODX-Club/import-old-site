@@ -1,3 +1,7 @@
+1.3.3
+===============================
+- Fix import comments
+
 1.3.2
 ===============================
 - Update @prisma-cms/module-boilerplate

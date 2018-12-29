@@ -785,8 +785,14 @@ export default class ImportProcessor extends PrismaProcessor {
     const query = source.getQuery("society_comments", "source")
       ;
 
+    /**
+     * Ранее была допущена логическая ошибка при импорте комментариев, так как oldID - это id документа,
+     * а комментарии импортировались из другой таблицы.
+     * Надо добавить commentOldID и по нему проверять (но при этом учесть ранее импортированные комментарии).
+     */
     query
-      .leftJoin(target.getTableName("Resource", "target"), "target.oldID", "source.id")
+      .leftJoin(target.getTableName("Resource", "target"), "target.commentOldID", "source.id")
+      // .leftJoin(target.getTableName("Resource", "Comment"), "target.commentOldID", "source.id")
       .innerJoin(target.getTableName("User"), "User.oldID", "source.createdby")
       .whereNull("target.id")
       // .whereIn("template", [
@@ -801,12 +807,12 @@ export default class ImportProcessor extends PrismaProcessor {
       .innerJoin(target.getTableName("Resource", "Topic"), "Topic.oldID", "threads.target_id")
 
     query
-      .leftJoin(target.getTableName("Resource", "Parent"), "Parent.oldID", "source.parent")
+      .leftJoin(target.getTableName("Resource", "Parent"), "Parent.commentOldID", "source.parent")
 
 
     query.select([
       "source.*",
-      "source.id as oldID",
+      "source.id as commentOldID",
       "target_id as topicId",
       "Topic.name as topicName",
       "Parent.id as parentId",
@@ -857,7 +863,7 @@ export default class ImportProcessor extends PrismaProcessor {
 
     let {
       id,
-      oldID,
+      commentOldID,
       // pagetitle: name,
       createdon,
       editedon,
@@ -878,7 +884,9 @@ export default class ImportProcessor extends PrismaProcessor {
 
     let type = "Comment";
 
-    const uri = `/comments/comment-${oldID}.html`;
+    editedon = editedon || createdon || undefined;
+
+    const uri = `/comments/comment-${commentOldID}.html`;
 
     let {
       content,
@@ -899,7 +907,7 @@ export default class ImportProcessor extends PrismaProcessor {
     result = await db.mutation.createResource({
       data: {
         type,
-        oldID: id,
+        commentOldID,
         class_key,
         template,
         uri,
