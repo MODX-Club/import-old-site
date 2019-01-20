@@ -1,3 +1,7 @@
+1.3.5
+===============================
+- User::sudo not required any more
+
 1.3.4
 ===============================
 - Added react dependency
